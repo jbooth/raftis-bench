@@ -19,7 +19,7 @@ public class WriteBenchPooled {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String group = args[2];
-        int numEntries = Integer.parseInt(args[3]) * (int)1e6;
+        int numEntries = Integer.parseInt(args[3]);
         int numThreads = Integer.parseInt(args[4]);
 
         RaftisPoolConfig poolConfig = new RaftisPoolConfig()
@@ -57,12 +57,12 @@ public class WriteBenchPooled {
                     Data.KV toPut = Data.entry(i);
                     long start = System.nanoTime();
                     cli.set(toPut.k, toPut.v);
-                    long elapsed = System.nanoTime();
-                    ret.addValue(elapsed * 1e6); // millis
+                    long elapsed = System.nanoTime() - start;
+                    System.out.println("finished write in " + elapsed + " nanos");
+                    ret.addValue(elapsed / 1e6); // millis
                 }
             }
             return ret;
-
         }
     }
 }

@@ -21,7 +21,8 @@ public class ReadBench {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String group = args[2];
-        int readsPerThread = Integer.parseInt(args[4]) * (int)1e6;
+        int spaceSize = Integer.parseInt(args[3]);
+        int readsPerThread = Integer.parseInt(args[4]) * (int)1e3;
         int numThreads = Integer.parseInt(args[5]);
 
         RaftisPoolConfig poolConfig = new RaftisPoolConfig()
@@ -32,7 +33,7 @@ public class ReadBench {
         System.out.println("WriteBenchPooled, launching " + numThreads + " threads to insert " + readsPerThread + " total entries.");
         List<Callable<SummaryStatistics>> tasks = new ArrayList<Callable<SummaryStatistics>>();
         for (int i = 0 ; i < numThreads ; i++) {
-            tasks.add(new ReadThread(readsPerThread,i,cli));
+            tasks.add(new ReadThread(spaceSize,readsPerThread,cli));
         }
         System.out.println(Util.report(Util.runParallel(tasks)));
     }
@@ -50,6 +51,7 @@ public class ReadBench {
 
         @Override
         public SummaryStatistics call() throws Exception {
+            System.out.println("Thread doing " + numReads + " reads");
             SummaryStatistics stats = new SummaryStatistics();
             Random r = new Random();
             for (int i = 0 ; i < numReads; i++) {
@@ -57,7 +59,8 @@ public class ReadBench {
                 long start = System.nanoTime();
                 String val = cli.get(lookup.k);
                 long elapsed = System.nanoTime() - start;
-                stats.addValue(elapsed * 1e6); // store value in millis
+                System.out.println("Did a read in " + elapsed + " nanos");
+                stats.addValue(elapsed / 1e6); // store value in millis
             }
             return stats;
         }
