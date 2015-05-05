@@ -33,6 +33,7 @@ public class WriteBenchPooled {
             tasks.add(new Writer(numEntries,i, numThreads, cli));
         }
         System.out.println(Util.report(Util.runParallel(tasks)));
+        System.exit(0);
     }
 
     private static class Writer implements Callable<SummaryStatistics> {

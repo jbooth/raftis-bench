@@ -40,6 +40,7 @@ public class Util {
         for (Future<T> f : waiting) {
             ret.add(f.get());
         }
+        exec.shutdown();
         return ret;
     }
 }
